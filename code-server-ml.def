@@ -1,0 +1,87 @@
+Bootstrap: docker
+From: nvidia/cuda:12.6.3-devel-ubuntu24.04
+
+%labels
+    Author Takuma Yagi
+    Description Code Server + ML + GPU container (Ubuntu 24.04 + CUDA 12.6)
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+    export PATH=/usr/local/cuda/bin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    export CUDA_HOME=/usr/local/cuda
+    export UV_LINK_MODE=copy
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update && apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        wget \
+        build-essential \
+        cmake \
+        pkg-config \
+        ca-certificates \
+        locales \
+        vim \
+        less \
+        openssh-client \
+        tmux \
+        htop \
+        jq \
+        rsync \
+        zip \
+        unzip \
+        tar \
+        gzip \
+        bzip2 \
+        xz-utils \
+        file \
+        man-db \
+        sudo \
+        net-tools \
+        iputils-ping \
+        dnsutils \
+        strace \
+        lsof \
+        tree \
+        ripgrep \
+        fd-find \
+        ffmpeg \
+        libavcodec-dev \
+        libavformat-dev \
+        libswscale-dev \
+        libv4l-dev \
+        libopencv-dev \
+        python3 \
+        python3-pip \
+        python3-venv \
+        python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+    # ロケール設定
+    locale-gen en_US.UTF-8
+
+    # uv インストール
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    mv /root/.local/bin/uv /usr/local/bin/uv
+    mv /root/.local/bin/uvx /usr/local/bin/uvx
+
+    # Node.js 22.x LTS
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    apt-get install -y nodejs
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    # code-server インストール
+    curl -fsSL https://code-server.dev/install.sh | sh
+
+    # Claude Code CLI
+    npm install -g @anthropic-ai/claude-code
+
+    # OpenAI Codex CLI
+    npm install -g @openai/codex
+
+%runscript
+    exec code-server --bind-addr 0.0.0.0:8080 --auth none "$@"
