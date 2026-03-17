@@ -27,6 +27,7 @@ All settings are controlled via environment variables. Set them inline, export t
 | Variable | Default | Description |
 |---|---|---|
 | `CODER_HOME` | `/ssd/coder_home` | Host directory mounted as `$HOME` in the container |
+| `CODER_TMP` | `<CODER_HOME>/../coder_tmp` | Host directory mounted as `/tmp` in the container (avoids filling up `/`) |
 | `CLAUDE_DIR` | `$HOME/.claude` | Host path to `.claude/` directory (auth credentials) |
 | `CLAUDE_JSON` | `$HOME/.claude.json` | Host path to `.claude.json` file |
 | `CUDA_VER` | `cu126` | CUDA version: `cu126` or `cu128` |
@@ -37,6 +38,7 @@ Create a `.env` file in the same directory as the script:
 
 ```bash
 CODER_HOME=/data/my_workspace
+CODER_TMP=/data/my_tmp
 CLAUDE_DIR=/home/alice/.claude
 CLAUDE_JSON=/home/alice/.claude.json
 ```
